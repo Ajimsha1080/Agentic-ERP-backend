@@ -1,7 +1,7 @@
 """Action-related schemas."""
 
 from typing import Optional, List
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, ConfigDict, HttpUrl
 from datetime import datetime
 from uuid import UUID
 

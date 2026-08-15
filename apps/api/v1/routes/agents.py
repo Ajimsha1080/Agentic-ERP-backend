@@ -6,14 +6,14 @@ from sqlalchemy import select, update
 from typing import List, Optional
 
 from packages.database import get_db
-from packages.models import Agent, AgentTool, AgentExecution
+from packages.models import Agent, AgentTool, ActionExecutionLog
 from ..schemas.agent import (
     AgentCreate, AgentUpdate, AgentResponse,
     AgentCreateResponse, AgentExecutionCreate, AgentExecutionResponse,
     ToolCreate, ToolResponse
 )
 from ..schemas.base import PaginatedResponse
-from ..security import get_current_user
+from packages.security.auth import get_current_user
 
 router = APIRouter(prefix="/agents", tags=["Agents"])
 
@@ -303,7 +303,7 @@ async def execute_agent(
         )
 
     # Create execution
-    execution = AgentExecution(
+    execution = ActionExecutionLog(
         agent_id=UUID(agent_id),
         user_id=current_user.id,
         status="running",
@@ -363,17 +363,17 @@ async def list_agent_executions(
         PaginatedResponse: Paginated list of executions
     """
     # Build query
-    query = select(AgentExecution).where(
-        AgentExecution.agent_id == UUID(agent_id)
+    query = select(ActionExecutionLog).where(
+        ActionExecutionLog.agent_id == UUID(agent_id)
     )
 
     # Filter by status
     if status:
-        query = query.where(AgentExecution.status == status)
+        query = query.where(ActionExecutionLog.status == status)
 
     # Get total count
-    count_query = select(AgentExecution).where(
-        AgentExecution.agent_id == UUID(agent_id)
+    count_query = select(ActionExecutionLog).where(
+        ActionExecutionLog.agent_id == UUID(agent_id)
     ).union_all(query)
     total_result = await db.execute(count_query)
     total = len(total_result.all())

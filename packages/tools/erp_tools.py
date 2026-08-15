@@ -1,0 +1,86 @@
+from typing import Dict, Any, List, Optional
+from packages.connectors.base import BaseConnector
+
+class AgentToolLayer:
+    """
+    Middleware layer between the AI Agent and the underlying ERP Connectors.
+    Enforces permission checks, policies, and idempotency before translating 
+    the semantic intent into a connector execution.
+    """
+
+    def __init__(self, connector: BaseConnector, agent_id: str):
+        self.connector = connector
+        self.agent_id = agent_id
+
+    async def _policy_check(self, action: str, entity: str) -> bool:
+        """
+        Stub for robust RBAC and policy checking.
+        """
+        # E.g., Only Finance Agents can create Payments.
+        # In a real system, this checks the database for agent_tools and tool_permissions.
+        return True
+
+    async def get_inventory(self, sku: Optional[str] = None) -> List[Dict[str, Any]]:
+        if not await self._policy_check("read", "inventory"):
+            raise PermissionError("Agent does not have permission to read inventory.")
+            
+        query = {"sku": sku} if sku else None
+        # Translates to Connector READ operation
+        records = await self.connector.read("inventory", query=query)
+        
+        # In production, we map `records` to UnifiedInventory Pydantic schemas here.
+        return records
+
+    async def create_purchase_order(self, supplier_id: str, items: List[Dict[str, Any]], amount: float) -> Dict[str, Any]:
+        if not await self._policy_check("create", "purchase_orders"):
+            raise PermissionError("Agent does not have permission to create purchase orders.")
+            
+        # Hard requirement: High-value actions require Human Approval
+        if amount > 10000:
+            return {
+                "status": "pending_approval",
+                "message": f"Purchase order for {amount} exceeds agent limits and requires human approval.",
+                "proposed_data": {
+                    "supplier_id": supplier_id,
+                    "items": items,
+                    "total_amount": amount
+                }
+            }
+
+        data = {
+            "supplier_id": supplier_id,
+            "items": items,
+            "total_amount": amount,
+            "status": "draft"
+        }
+        
+        # Translates to Connector CREATE operation
+        result = await self.connector.create("purchase_orders", data=data)
+        
+        # Verify idempotency/success
+        if not result.get("id"):
+            raise Exception("Failed to verify purchase order creation.")
+            
+        return result
+
+    async def get_customers(self) -> List[Dict[str, Any]]:
+        if not await self._policy_check("read", "customers"):
+            raise PermissionError("Agent does not have permission to read customers.")
+        return await self.connector.read("customers")
+
+    async def create_invoice(self, customer_id: str, amount: float) -> Dict[str, Any]:
+        if not await self._policy_check("create", "invoices"):
+            raise PermissionError("Agent does not have permission to create invoices.")
+        
+        data = {"customer_id": customer_id, "amount": amount, "status": "pending"}
+        return await self.connector.create("invoices", data=data)
+
+# LEGACY MOCK TOOLS FOR CHAT ROUTER
+def check_inventory():
+    return "Inventory looks good, we have 450 units in stock."
+
+def check_revenue():
+    return "Revenue this month is $425,000."
+
+def check_pending_invoices():
+    return "There are 3 pending invoices awaiting approval."

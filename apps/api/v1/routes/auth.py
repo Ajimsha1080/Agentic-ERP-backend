@@ -16,7 +16,7 @@ from packages.security import (
     get_current_user,
 )
 from packages.models import User, UserRole, UserRoleAssignment
-from ..schemas.user import UserLogin, Token, TokenRefresh, UserCreate, UserResponse
+from ..schemas.user import UserLogin, Token, TokenRefresh, UserCreate, UserResponse, UserCreateResponse
 
 settings = get_settings()
 

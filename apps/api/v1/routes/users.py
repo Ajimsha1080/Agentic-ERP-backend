@@ -6,10 +6,10 @@ from sqlalchemy import select, update
 from typing import List, Optional
 
 from packages.database import get_db
-from packages.models import User, UserRoleAssignment, UserWorkspaceRole, UserTeamRole
+from packages.models import User, UserRoleAssignment
 from ..schemas.user import UserCreate, UserUpdate, UserResponse, UserRoleResponse, PaginationParams
 from ..schemas.base import PaginatedResponse
-from ..security import get_current_user, require_permissions
+from packages.security.auth import get_current_user, require_permissions
 
 router = APIRouter(prefix="/users", tags=["Users"])
 

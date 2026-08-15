@@ -13,7 +13,7 @@ from ..schemas.action import (
     WorkflowCreate, WorkflowResponse, ApprovalRequestCreate, ApprovalRequestResponse
 )
 from ..schemas.base import PaginatedResponse
-from ..security import get_current_user
+from packages.security.auth import get_current_user
 
 router = APIRouter(prefix="/actions", tags=["Actions"])
 
