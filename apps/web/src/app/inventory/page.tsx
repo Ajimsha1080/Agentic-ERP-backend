@@ -40,15 +40,17 @@ export default function InventoryPage() {
           </div>
         ) : (
           <>
-            <div className="ai-insight" style={{ marginBottom: '24px' }}>
-              <div className="ai-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+            {data?.insight && (
+              <div className="ai-insight" style={{ marginBottom: '24px' }}>
+                <div className="ai-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+                </div>
+                <div>
+                  <h4 className="font-semibold text-sm mb-1" style={{ color: 'var(--ai-core)' }}>{data.insight.title || 'Inventory Stream Active'}</h4>
+                  <p className="text-sm text-dim">{data.insight.description || 'SKU inventory monitoring active.'} <Link href="/?context=Inventory" style={{ color: 'var(--ai-core)', textDecoration: 'underline' }}>Generate Purchase Recommendations</Link></p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-semibold text-sm mb-1" style={{ color: 'var(--ai-core)' }}>{data.insight.title}</h4>
-                <p className="text-sm text-dim">{data.insight.description} <Link href="/?context=Inventory" style={{ color: 'var(--ai-core)', textDecoration: 'underline' }}>Generate Purchase Recommendations</Link></p>
-              </div>
-            </div>
+            )}
 
             <div className="kpi-grid" style={{ marginBottom: '32px' }}>
               {(data?.kpis || []).map((kpi: any, i: number) => (
