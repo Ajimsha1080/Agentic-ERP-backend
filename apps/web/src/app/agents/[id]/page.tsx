@@ -1,0 +1,172 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+
+export default function AgentDetailPage() {
+  const params = useParams();
+  const agentId = params?.id || "1";
+
+  const [agent, setAgent] = useState<any>(null);
+  const [logs, setLogs] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/v1/agents")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data) && data.length > 0) {
+          const found = data.find((a: any) => String(a.id) === String(agentId)) || data[0];
+          setAgent(found);
+        } else {
+          setAgent({ id: agentId, name: "Inventory Agent", role: "Inventory", status: "Active", successRate: "98.5%", actions: 320 });
+        }
+      })
+      .catch(() => {
+        setAgent({ id: agentId, name: "Inventory Agent", role: "Inventory", status: "Active", successRate: "98.5%", actions: 320 });
+      });
+
+    // Mock live execution logs
+    setLogs([
+      { time: "10:42 AM", level: "INFO", message: "Ran stockout prediction model for 8,492 SKUs", tool: "sap_inventory_fetcher" },
+      { time: "10:38 AM", level: "WARN", message: "Flagged ABC-100 stockout risk (4.3 days left)", tool: "velocity_analyzer" },
+      { time: "10:30 AM", level: "INFO", message: "Drafted Emergency PO-10482 for 500 units", tool: "procurement_drafter" },
+      { time: "09:15 AM", level: "INFO", message: "Synced stock levels with Shopify warehouse feed", tool: "shopify_connector" },
+      { time: "08:00 AM", level: "INFO", message: "Booted agent process & verified database connection", tool: "agent_core" }
+    ]);
+  }, [agentId]);
+
+  if (!agent) {
+    return <main className="main"><div className="content"><div className="skeleton" style={{ height: '300px' }}></div></div></main>;
+  }
+
+  return (
+    <main className="main">
+      <div className="topbar">
+        <div>
+          <Link href="/agents" className="crumb" style={{ textDecoration: 'none' }}>← Agents</Link>
+          <span className="crumb-sub">/ {agent.name} Control Center</span>
+        </div>
+        <div style={{ marginLeft: 'auto', display: 'flex', gap: '8px' }}>
+          <button className="btn btn-secondary" onClick={() => alert("Triggered manual agent sync...")}>Sync Agent</button>
+          <Link href={`/?context=${agent.role}`} className="btn btn-primary" style={{ background: 'var(--ai-core)' }}>Ask Agent</Link>
+        </div>
+      </div>
+
+      <div className="content" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        
+        {/* Agent Overview Card */}
+        <div className="panel" style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+            <div style={{ width: '56px', height: '56px', borderRadius: '14px', background: 'var(--surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ai-core)', border: '1px solid var(--border)' }}>
+              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM4 11a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-7z"/>
+              </svg>
+            </div>
+            <div>
+              <h1 className="font-semibold text-xl">{agent.name}</h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                <span className="badge active">{agent.status || 'Active'}</span>
+                <span className="text-xs text-dim">• Department: {agent.role}</span>
+                <span className="text-xs text-dim">• Success Rate: {agent.successRate || '99%'}</span>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', gap: '24px' }}>
+            <div style={{ textAlign: 'right' }}>
+              <div className="text-xs text-faint font-semibold uppercase">Total Actions</div>
+              <div className="font-semibold text-lg mt-1">{agent.actions ?? 142}</div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <div className="text-xs text-faint font-semibold uppercase">Connected Connectors</div>
+              <div className="font-semibold text-lg mt-1">3 Connected</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tools & Capabilities */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
+          
+          <div className="panel" style={{ padding: '24px' }}>
+            <h3 className="font-semibold text-base mb-4">Assigned Agent Tools & Connectors</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: 600 }}>sap_inventory_fetcher</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-dim)' }}>Reads SKU quantities & warehouse bin locations</div>
+                </div>
+                <span className="badge active">Active</span>
+              </div>
+              <div style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: 600 }}>velocity_predictive_model</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-dim)' }}>Calculates 90-day sales consumption rate</div>
+                </div>
+                <span className="badge active">Active</span>
+              </div>
+              <div style={{ padding: '12px', borderRadius: '8px', background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <div style={{ fontSize: '13px', fontWeight: 600 }}>procurement_auto_drafter</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-dim)' }}>Generates purchase order recommendations</div>
+                </div>
+                <span className="badge active">Active</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="panel" style={{ padding: '24px' }}>
+            <h3 className="font-semibold text-base mb-4">Agent Security & Limits</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <div className="text-xs text-faint font-semibold uppercase mb-1">Human-in-the-Loop Threshold</div>
+                <div style={{ fontSize: '13px', color: 'var(--text)' }}>Requires manager approval for transactions exceeding <strong>$1,000.00</strong></div>
+              </div>
+              <div>
+                <div className="text-xs text-faint font-semibold uppercase mb-1">Data Access Boundary</div>
+                <div style={{ fontSize: '13px', color: 'var(--text)' }}>Read/Write access to Inventory, Read-only access to Finance</div>
+              </div>
+              <div>
+                <div className="text-xs text-faint font-semibold uppercase mb-1">Execution Mode</div>
+                <div style={{ fontSize: '13px', color: 'var(--verified)', fontWeight: 600 }}>Autonomous Monitoring + Approval Pipeline</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Live Execution Logs */}
+        <div className="panel" style={{ padding: '24px' }}>
+          <h3 className="font-semibold text-base mb-4">Live Execution Audit Logs</h3>
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Level</th>
+                  <th>Tool Executed</th>
+                  <th>Execution Message</th>
+                </tr>
+              </thead>
+              <tbody>
+                {logs.map((log, i) => (
+                  <tr key={i}>
+                    <td className="mono text-xs">{log.time}</td>
+                    <td>
+                      <span className={`badge ${log.level === 'WARN' ? 'warning' : 'active'}`}>
+                        {log.level}
+                      </span>
+                    </td>
+                    <td className="mono text-xs">{log.tool}</td>
+                    <td style={{ fontSize: '13px' }}>{log.message}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  );
+}
