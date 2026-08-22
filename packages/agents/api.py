@@ -23,12 +23,23 @@ class AgentResponse(BaseModel):
     class Config:
         from_attributes = True
 
+DEFAULT_AGENTS = [
+    {"name": "Finance Agent", "role": "Finance", "status": "Active", "success_rate": "99.2%", "actions": 142},
+    {"name": "Inventory Agent", "role": "Inventory", "status": "Active", "success_rate": "98.5%", "actions": 320},
+    {"name": "Procurement Agent", "role": "Procurement", "status": "Active", "success_rate": "100%", "actions": 45},
+    {"name": "Sales Agent", "role": "Sales", "status": "Active", "success_rate": "96.4%", "actions": 89},
+    {"name": "Operations Agent", "role": "Operations", "status": "Paused", "success_rate": "0%", "actions": 0},
+    {"name": "HR Agent", "role": "HR", "status": "Active", "success_rate": "100%", "actions": 12},
+    {"name": "Analytics Agent", "role": "Analytics", "status": "Active", "success_rate": "99.8%", "actions": 210},
+    {"name": "Compliance Agent", "role": "Compliance", "status": "Active", "success_rate": "100%", "actions": 64}
+]
+
 @router.post("", response_model=AgentResponse)
 def create_agent(agent: AgentCreate, db: Session = Depends(get_db)):
     db_agent = models.AgentModel(
         name=agent.name,
         role=agent.role,
-        status="idle",
+        status="Active",
         success_rate="100%",
         actions=0
     )
@@ -36,7 +47,6 @@ def create_agent(agent: AgentCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_agent)
     
-    # Map snake_case to camelCase for the frontend
     return {
         "id": db_agent.id,
         "name": db_agent.name,
@@ -49,7 +59,20 @@ def create_agent(agent: AgentCreate, db: Session = Depends(get_db)):
 @router.get("", response_model=List[AgentResponse])
 def get_agents(db: Session = Depends(get_db)):
     agents = db.query(models.AgentModel).all()
-    # Map for frontend
+    if not agents:
+        # Seed default agents
+        for da in DEFAULT_AGENTS:
+            db_agent = models.AgentModel(
+                name=da["name"],
+                role=da["role"],
+                status=da["status"],
+                success_rate=da["success_rate"],
+                actions=da["actions"]
+            )
+            db.add(db_agent)
+        db.commit()
+        agents = db.query(models.AgentModel).all()
+
     return [
         {
             "id": a.id,
@@ -76,7 +99,7 @@ def toggle_agent(agent_id: int, db: Session = Depends(get_db)):
     if not agent:
         raise HTTPException(status_code=404, detail="Agent not found")
     
-    agent.status = "paused" if agent.status in ["idle", "running"] else "idle"
+    agent.status = "Paused" if agent.status in ["Active", "idle", "running"] else "Active"
     db.commit()
     db.refresh(agent)
     
