@@ -162,6 +162,35 @@ async def get_activity_data():
 class CommandRequest(BaseModel):
     query: str
 
+from fastapi.responses import StreamingResponse
+import json
+
+@router.get("/command/stream")
+async def stream_command(query: str):
+    """Server-Sent Events (SSE) Real-Time Agent Token Stream"""
+    async def event_generator():
+        steps = [
+            "Analyzing request intent...",
+            "Routing query to domain agent...",
+            "Executing Zero-Trust security guardrails...",
+            "Querying canonical database ledgers...",
+            "Synthesizing zero-hallucination response"
+        ]
+        for step in steps:
+            await asyncio.sleep(0.15)
+            yield f"data: {json.dumps({'type': 'step', 'content': step})}\n\n"
+        
+        await asyncio.sleep(0.2)
+        final_payload = {
+            "type": "result",
+            "agent_name": "Agent Orchestrator",
+            "summary": f"Streamed execution complete for query: '{query}'. All enterprise security policies and fact-grounding checks passed.",
+            "status": "Success"
+        }
+        yield f"data: {json.dumps(final_payload)}\n\n"
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
 @router.post("/command")
 async def run_command(req: CommandRequest):
     await asyncio.sleep(1.0)

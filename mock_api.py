@@ -19,11 +19,15 @@ app.add_middleware(
 )
 
 from apps.api.v1.routes.connectors import router as connectors_router
+from apps.api.v1.routes.webhooks import router as webhooks_router
+from apps.api.v1.routes.auth import router as auth_router
 
 app.include_router(chat_router, prefix="/api/v1")
 app.include_router(agents_router, prefix="/api/v1")
 app.include_router(connectors_router, prefix="/api/v1")
 app.include_router(dashboard_router, prefix="/api/v1")
+app.include_router(webhooks_router, prefix="/api/v1")
+app.include_router(auth_router, prefix="/api/v1")
 
 if __name__ == "__main__":
     import uvicorn

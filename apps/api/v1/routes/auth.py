@@ -204,19 +204,38 @@ async def verify_user(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ):
-    """Verify user account.
-
-    Args:
-        current_user: Current authenticated user
-        db: Database session
-
-    Returns:
-        dict: Verification result
-    """
-    # TODO: Implement user verification logic
-    # This would typically require a verification token sent via email
-
+    """Verify user account."""
     raise HTTPException(
         status_code=status.HTTP_501_NOT_IMPLEMENTED,
         detail="User verification not yet implemented"
     )
+
+# --- ENTERPRISE SSO & IDENTITY PROVIDER ENDPOINTS ---
+
+from packages.auth.sso import sso_manager
+
+@router.get("/sso/providers")
+async def get_sso_providers():
+    """List enabled enterprise SAML 2.0 / OIDC Identity Providers."""
+    return sso_manager.list_providers()
+
+@router.post("/sso/login")
+async def sso_login(provider_id: str, redirect_uri: str = "http://localhost:3000/auth/callback"):
+    """Generate SAML 2.0 / OIDC Single Sign-On authorization URL."""
+    try:
+        return sso_manager.generate_sso_auth_url(provider_id, redirect_uri)
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+@router.get("/sso/callback")
+async def sso_callback(provider_id: str, code: str):
+    """Process Enterprise SSO Authorization Callback & Return Tokens."""
+    user_info = sso_manager.authenticate_sso_callback(provider_id, code)
+    access_token = create_access_token(data={"sub": user_info.user_id, "roles": user_info.roles})
+    refresh_token = create_refresh_token(data={"sub": user_info.user_id})
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer",
+        "user": user_info
+    }
