@@ -10,7 +10,7 @@ asyncpg==0.29.0
 psycopg2-binary==2.9.9
 
 # Database
-pgvector==0.2.6
+pgvector>=0.2.5
 redis==5.0.1
 
 # Authentication & Security
@@ -120,11 +120,6 @@ ujson==5.10.0
 
 # Security
 cryptography==41.0.7
-cryptography-hazmat-primitives==41.0.7
-cryptography-hazmat-backends==41.0.7
-
-# UUID
-uuid==1.30
 
 # LLM Evaluation
 ragas==0.1.0
