@@ -142,7 +142,7 @@ function AICommandCenterContent() {
               <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '32px', flexWrap: 'wrap' }}>
                 <button onClick={() => handleSearch(undefined, "Why did revenue change this month?")} className="btn btn-secondary text-xs">Why did revenue change this month?</button>
                 <button onClick={() => handleSearch(undefined, "Which products are at risk of stockout?")} className="btn btn-secondary text-xs">Which products are at risk of stockout?</button>
-                <button onClick={() => handleSearch(undefined, "Compare suppliers for ABC-100")} className="btn btn-secondary text-xs">Compare suppliers for ABC-100</button>
+                <button onClick={() => handleSearch(undefined, "Compare raw material supplier quotes")} className="btn btn-secondary text-xs">Compare raw material supplier quotes</button>
                 <button onClick={() => handleSearch(undefined, "Show overdue invoices")} className="btn btn-secondary text-xs">Show overdue invoices</button>
                 <button onClick={() => handleSearch(undefined, "What requires my attention today?")} className="btn btn-secondary text-xs">What requires my attention today?</button>
               </div>

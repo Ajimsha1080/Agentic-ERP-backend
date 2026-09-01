@@ -18,14 +18,14 @@ export default function AgentsPage() {
       .catch(() => {
         // Core Predefined Autonomous AI Workforce
         setAgents([
-          { id: 1, name: "Finance Agent", role: "Finance", status: "Active", successRate: "99.2%", actions: 142 },
-          { id: 2, name: "Inventory Agent", role: "Inventory", status: "Active", successRate: "98.5%", actions: 320 },
-          { id: 3, name: "Procurement Agent", role: "Procurement", status: "Active", successRate: "100%", actions: 45 },
-          { id: 4, name: "Sales Agent", role: "Sales", status: "Active", successRate: "96.4%", actions: 89 },
-          { id: 5, name: "Operations Agent", role: "Operations", status: "Active", successRate: "99.0%", actions: 108 },
-          { id: 6, name: "HR Agent", role: "HR", status: "Active", successRate: "100%", actions: 12 },
-          { id: 7, name: "Analytics Agent", role: "Analytics", status: "Active", successRate: "99.8%", actions: 210 },
-          { id: 8, name: "Compliance Agent", role: "Compliance", status: "Active", successRate: "100%", actions: 64 }
+          { id: 1, name: "Finance Agent", role: "Finance", status: "Active", successRate: "100%", actions: 0 },
+          { id: 2, name: "Inventory Agent", role: "Inventory", status: "Active", successRate: "100%", actions: 0 },
+          { id: 3, name: "Procurement Agent", role: "Procurement", status: "Active", successRate: "100%", actions: 0 },
+          { id: 4, name: "Sales Agent", role: "Sales", status: "Active", successRate: "100%", actions: 0 },
+          { id: 5, name: "Operations Agent", role: "Operations", status: "Active", successRate: "100%", actions: 0 },
+          { id: 6, name: "HR Agent", role: "HR", status: "Active", successRate: "100%", actions: 0 },
+          { id: 7, name: "Analytics Agent", role: "Analytics", status: "Active", successRate: "100%", actions: 0 },
+          { id: 8, name: "Compliance Agent", role: "Compliance", status: "Active", successRate: "100%", actions: 0 }
         ]);
       })
       .finally(() => setLoading(false));
