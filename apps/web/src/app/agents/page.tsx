@@ -7,27 +7,22 @@ export default function AgentsPage() {
   const [agents, setAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Deploy Agent Modal State
-  const [isDeployModalOpen, setIsDeployModalOpen] = useState(false);
-  const [newAgentName, setNewAgentName] = useState("");
-  const [newAgentRole, setNewAgentRole] = useState("Finance");
-  const [newModelProvider, setNewModelProvider] = useState("OpenAI GPT-4o");
-  const [newApprovalLimit, setNewApprovalLimit] = useState("1000");
-
   const fetchAgents = () => {
     fetch("http://localhost:8000/api/v1/agents")
       .then(res => res.json())
       .then(data => {
-        if (Array.isArray(data)) setAgents(data);
-        else if (data && data.items) setAgents(data.items);
+        if (Array.isArray(data) && data.length > 0) setAgents(data);
+        else if (data && data.items && data.items.length > 0) setAgents(data.items);
+        else throw new Error("Use predefined core workforce");
       })
       .catch(() => {
+        // Core Predefined Autonomous AI Workforce
         setAgents([
           { id: 1, name: "Finance Agent", role: "Finance", status: "Active", successRate: "99.2%", actions: 142 },
           { id: 2, name: "Inventory Agent", role: "Inventory", status: "Active", successRate: "98.5%", actions: 320 },
           { id: 3, name: "Procurement Agent", role: "Procurement", status: "Active", successRate: "100%", actions: 45 },
           { id: 4, name: "Sales Agent", role: "Sales", status: "Active", successRate: "96.4%", actions: 89 },
-          { id: 5, name: "Operations Agent", role: "Operations", status: "Paused", successRate: "0%", actions: 0 },
+          { id: 5, name: "Operations Agent", role: "Operations", status: "Active", successRate: "99.0%", actions: 108 },
           { id: 6, name: "HR Agent", role: "HR", status: "Active", successRate: "100%", actions: 12 },
           { id: 7, name: "Analytics Agent", role: "Analytics", status: "Active", successRate: "99.8%", actions: 210 },
           { id: 8, name: "Compliance Agent", role: "Compliance", status: "Active", successRate: "100%", actions: 64 }
@@ -39,37 +34,6 @@ export default function AgentsPage() {
   useEffect(() => {
     fetchAgents();
   }, []);
-
-  const handleDeployAgentSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newAgentName.trim()) return;
-
-    const payload = {
-      name: newAgentName,
-      role: newAgentRole
-    };
-
-    fetch("http://localhost:8000/api/v1/agents/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    })
-      .then(res => res.json())
-      .then(savedAgent => {
-        if (savedAgent && savedAgent.id) {
-          setAgents(prev => [savedAgent, ...prev]);
-        } else {
-          setAgents(prev => [{ id: Date.now(), name: newAgentName, role: newAgentRole, status: "Active", successRate: "100%", actions: 0 }, ...prev]);
-        }
-      })
-      .catch(() => {
-        setAgents(prev => [{ id: Date.now(), name: newAgentName, role: newAgentRole, status: "Active", successRate: "100%", actions: 0 }, ...prev]);
-      })
-      .finally(() => {
-        setIsDeployModalOpen(false);
-        setNewAgentName("");
-      });
-  };
 
   const togglePauseStatus = (id: number) => {
     setAgents(agents.map(a => a.id === id ? { ...a, status: a.status === 'Paused' ? 'Active' : 'Paused' } : a));
@@ -85,15 +49,8 @@ export default function AgentsPage() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
           <div>
             <h1 className="display" style={{ fontSize: '24px' }}>AI Workforce</h1>
-            <p className="text-dim text-sm" style={{ marginTop: '4px' }}>Manage, monitor, and deploy specialized autonomous agents.</p>
+            <p className="text-dim text-sm" style={{ marginTop: '4px' }}>Predefined specialized autonomous agent workforce for enterprise ERP execution.</p>
           </div>
-          <button 
-            className="btn btn-primary" 
-            style={{ background: 'var(--ai-core)' }}
-            onClick={() => setIsDeployModalOpen(true)}
-          >
-            + Deploy Agent
-          </button>
         </div>
 
         {loading ? (
@@ -151,56 +108,6 @@ export default function AgentsPage() {
         )}
 
       </div>
-
-      {/* Deploy Agent Modal */}
-      {isDeployModalOpen && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '32px', width: '100%', maxWidth: '500px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h2 className="font-semibold text-lg">Deploy New Specialized AI Agent</h2>
-              <button onClick={() => setIsDeployModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: '20px', cursor: 'pointer' }}>✕</button>
-            </div>
-
-            <form onSubmit={handleDeployAgentSubmit}>
-              <div style={{ marginBottom: '16px' }}>
-                <label className="text-xs font-semibold uppercase text-faint mb-1 block">Agent Name</label>
-                <input type="text" required className="ai-cmd-input" style={{ width: '100%', padding: '10px 14px' }} placeholder="e.g., Audit & Tax Compliance Agent" value={newAgentName} onChange={(e) => setNewAgentName(e.target.value)} />
-              </div>
-
-              <div style={{ marginBottom: '16px' }}>
-                <label className="text-xs font-semibold uppercase text-faint mb-1 block">Domain Role</label>
-                <select className="ai-cmd-input" style={{ width: '100%', padding: '10px 14px' }} value={newAgentRole} onChange={(e) => setNewAgentRole(e.target.value)}>
-                  <option value="Finance">Finance & Treasury</option>
-                  <option value="Inventory">Inventory & WMS</option>
-                  <option value="Procurement">Procurement & POs</option>
-                  <option value="Sales">Sales & CRM</option>
-                  <option value="Operations">Operations & Logistics</option>
-                  <option value="Compliance">Security & Compliance</option>
-                </select>
-              </div>
-
-              <div style={{ marginBottom: '16px' }}>
-                <label className="text-xs font-semibold uppercase text-faint mb-1 block">LLM Model Provider</label>
-                <select className="ai-cmd-input" style={{ width: '100%', padding: '10px 14px' }} value={newModelProvider} onChange={(e) => setNewModelProvider(e.target.value)}>
-                  <option value="OpenAI GPT-4o">OpenAI GPT-4o</option>
-                  <option value="Anthropic Claude 3.5 Sonnet">Anthropic Claude 3.5 Sonnet</option>
-                  <option value="Google Gemini 1.5 Pro">Google Gemini 1.5 Pro</option>
-                </select>
-              </div>
-
-              <div style={{ marginBottom: '24px' }}>
-                <label className="text-xs font-semibold uppercase text-faint mb-1 block">Auto-Approval Threshold ($)</label>
-                <input type="number" className="ai-cmd-input" style={{ width: '100%', padding: '10px 14px' }} value={newApprovalLimit} onChange={(e) => setNewApprovalLimit(e.target.value)} />
-              </div>
-
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button type="button" className="btn btn-secondary" onClick={() => setIsDeployModalOpen(false)}>Cancel</button>
-                <button type="submit" className="btn btn-primary" style={{ flex: 1, background: 'var(--ai-core)' }}>Deploy Agent to Workforce</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </main>
   );
 }
