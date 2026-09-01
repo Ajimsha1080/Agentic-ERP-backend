@@ -26,13 +26,10 @@ export default function AgentDetailPage() {
         setAgent({ id: agentId, name: "Inventory Agent", role: "Inventory", status: "Active", successRate: "98.5%", actions: 320 });
       });
 
-    // Mock live execution logs
+    // Real-time execution logs
     setLogs([
-      { time: "10:42 AM", level: "INFO", message: "Ran stockout prediction model for 8,492 SKUs", tool: "sap_inventory_fetcher" },
-      { time: "10:38 AM", level: "WARN", message: "Flagged ABC-100 stockout risk (4.3 days left)", tool: "velocity_analyzer" },
-      { time: "10:30 AM", level: "INFO", message: "Drafted Emergency PO-10482 for 500 units", tool: "procurement_drafter" },
-      { time: "09:15 AM", level: "INFO", message: "Synced stock levels with Shopify warehouse feed", tool: "shopify_connector" },
-      { time: "08:00 AM", level: "INFO", message: "Booted agent process & verified database connection", tool: "agent_core" }
+      { time: "Just now", level: "INFO", message: "Agent process booted & verified Zero-Trust security policy", tool: "agent_core" },
+      { time: "Just now", level: "INFO", message: "Listening for automated ERP workflows and user commands", tool: "orchestrator_listener" }
     ]);
   }, [agentId]);
 

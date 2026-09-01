@@ -15,10 +15,10 @@ export default function AnalyticsPage() {
       <div className="content" style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
         <div className="kpi-row" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
           {[
-            { label: 'Total Tokens Used', value: '42.8M', delta: '+12% vs last month', color: 'var(--accent)' },
-            { label: 'Hours Saved', value: '1,240', delta: '+8% vs last month', color: 'var(--verified)' },
-            { label: 'Actions Executed', value: '84,902', delta: '+22% vs last month', color: 'var(--executing)' },
-            { label: 'Human Interventions', value: '42', delta: '-15% vs last month', color: 'var(--pending)' }
+            { label: 'Total Tokens Used', value: '0.0k', delta: 'System Initialized', color: 'var(--accent)' },
+            { label: 'Hours Saved', value: '0.0', delta: 'Ready for Workflows', color: 'var(--verified)' },
+            { label: 'Actions Executed', value: '0', delta: 'Agents Active', color: 'var(--executing)' },
+            { label: 'Human Interventions', value: '0', delta: 'Queue Clear', color: 'var(--pending)' }
           ].map(kpi => (
             <div key={kpi.label} className="panel" style={{ padding: '24px' }}>
               <div style={{ fontSize: '12px', color: 'var(--text-dim)', marginBottom: '8px' }}>{kpi.label}</div>

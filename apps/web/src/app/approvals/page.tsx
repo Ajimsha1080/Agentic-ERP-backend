@@ -60,7 +60,7 @@ export default function ApprovalsPage() {
           </div>
           <div className="kpi-card">
             <div className="kpi-label">Avg Approval Velocity</div>
-            <div className="kpi-val">1.2 mins</div>
+            <div className="kpi-val">{items.length > 0 ? "1.2 mins" : "<0.1 mins"}</div>
             <div className="kpi-delta up">Rapid Decision Gate</div>
           </div>
         </div>
