@@ -44,18 +44,31 @@ export default function AgentsPage() {
     e.preventDefault();
     if (!newAgentName.trim()) return;
 
-    const newAgentObj = {
-      id: Date.now(),
+    const payload = {
       name: newAgentName,
-      role: newAgentRole,
-      status: "Active",
-      successRate: "100%",
-      actions: 0
+      role: newAgentRole
     };
 
-    setAgents([newAgentObj, ...agents]);
-    setIsDeployModalOpen(false);
-    setNewAgentName("");
+    fetch("http://localhost:8000/api/v1/agents/", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    })
+      .then(res => res.json())
+      .then(savedAgent => {
+        if (savedAgent && savedAgent.id) {
+          setAgents(prev => [savedAgent, ...prev]);
+        } else {
+          setAgents(prev => [{ id: Date.now(), name: newAgentName, role: newAgentRole, status: "Active", successRate: "100%", actions: 0 }, ...prev]);
+        }
+      })
+      .catch(() => {
+        setAgents(prev => [{ id: Date.now(), name: newAgentName, role: newAgentRole, status: "Active", successRate: "100%", actions: 0 }, ...prev]);
+      })
+      .finally(() => {
+        setIsDeployModalOpen(false);
+        setNewAgentName("");
+      });
   };
 
   const togglePauseStatus = (id: number) => {
