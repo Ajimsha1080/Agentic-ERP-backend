@@ -1,6 +1,24 @@
 "use client";
 
+import { useState, useEffect } from "react";
+
 export default function OperationsPage() {
+  const [data, setData] = useState<{ activeShipments: number; delayedShipments: number }>({
+    activeShipments: 0,
+    delayedShipments: 0
+  });
+
+  useEffect(() => {
+    fetch("http://localhost:8000/api/v1/dashboard/operations")
+      .then(res => res.json())
+      .then(d => {
+        if (d) setData(d);
+      })
+      .catch(() => {
+        setData({ activeShipments: 0, delayedShipments: 0 });
+      });
+  }, []);
+
   return (
     <main className="main">
       <div className="topbar">
@@ -18,14 +36,22 @@ export default function OperationsPage() {
         <div className="kpi-grid" style={{ marginBottom: '32px' }}>
           <div className="kpi-card">
             <div className="kpi-label">Active Shipments</div>
-            <div className="kpi-val">1,204</div>
-            <div className="kpi-delta flat">Stable</div>
+            <div className="kpi-val">{data.activeShipments}</div>
+            <div className="kpi-delta flat">{data.activeShipments > 0 ? "Tracking Live" : "Awaiting Logistics Stream"}</div>
           </div>
           <div className="kpi-card">
             <div className="kpi-label">Delayed Shipments</div>
-            <div className="kpi-val">14</div>
-            <div className="kpi-delta warning">Attention Needed</div>
+            <div className="kpi-val">{data.delayedShipments}</div>
+            <div className="kpi-delta active">{data.delayedShipments > 0 ? "Attention Needed" : "Queue Clear"}</div>
           </div>
+        </div>
+
+        <div className="panel" style={{ padding: '60px 24px', textAlign: 'center', borderRadius: '16px' }}>
+          <div style={{ fontSize: '42px', marginBottom: '16px' }}>🚢</div>
+          <h3 className="font-semibold text-base mb-1" style={{ color: 'var(--text)' }}>Real-Time Operations Stream Active</h3>
+          <p className="text-sm text-dim" style={{ maxWidth: '440px', margin: '0 auto' }}>
+            No live shipping or logistics stream connected yet. Connect your 3PL, FedEx, DHL, or SAP Logistics API in /connectors to track live shipments.
+          </p>
         </div>
       </div>
     </main>
