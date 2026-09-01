@@ -17,8 +17,8 @@ class AgentResponse(BaseModel):
     name: str
     role: str
     status: str
-    successRate: str
-    actions: int
+    successRate: str | None = "100%"
+    actions: int | None = 0
 
     class Config:
         from_attributes = True
@@ -34,7 +34,7 @@ DEFAULT_AGENTS = [
     {"name": "Compliance Agent", "role": "Compliance", "status": "Active", "success_rate": "100%", "actions": 64}
 ]
 
-@router.post("", response_model=AgentResponse)
+@router.post("/", response_model=AgentResponse)
 def create_agent(agent: AgentCreate, db: Session = Depends(get_db)):
     db_agent = models.AgentModel(
         name=agent.name,
@@ -56,7 +56,7 @@ def create_agent(agent: AgentCreate, db: Session = Depends(get_db)):
         "actions": db_agent.actions
     }
 
-@router.get("", response_model=List[AgentResponse])
+@router.get("/", response_model=List[AgentResponse])
 def get_agents(db: Session = Depends(get_db)):
     agents = db.query(models.AgentModel).all()
     if not agents:

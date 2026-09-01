@@ -135,6 +135,14 @@ async def get_security_data():
         ]
     }
 
+@router.get("/operations")
+async def get_operations_data():
+    await asyncio.sleep(0.3)
+    return {
+        "activeShipments": 0,
+        "delayedShipments": 0
+    }
+
 @router.get("/activity")
 async def get_activity_data():
     await asyncio.sleep(0.3)

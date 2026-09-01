@@ -28,7 +28,7 @@ async def list_agents(
     type: Optional[str] = None,
     status: Optional[str] = None,
     db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    current_user: Optional[Any] = None
 ):
     """List agents.
 
