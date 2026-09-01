@@ -324,8 +324,8 @@ function AICommandCenterContent() {
           <form onSubmit={(e) => handleSearch(e)} style={{ position: 'relative', maxWidth: '800px', margin: '0 auto', display: 'flex', flexDirection: 'column' }}>
             
             {/* Smart Context Selector */}
-            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px' }}>
-              {["Auto", "Finance", "Inventory", "Procurement", "Sales"].map(agent => (
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
+              {["Auto", "Finance", "Inventory", "Procurement", "Sales", "Operations", "HR", "Analytics", "Compliance"].map(agent => (
                 <button 
                   key={agent} 
                   type="button"
