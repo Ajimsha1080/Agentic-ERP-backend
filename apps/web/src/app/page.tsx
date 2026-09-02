@@ -173,17 +173,6 @@ function AICommandCenterContent() {
 
                           <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '12px', padding: '24px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
                             
-                            {/* Execution Progress */}
-                            {msg.data.execution_steps && (
-                              <div style={{ marginBottom: '24px', background: 'var(--bg)', border: '1px solid var(--border)', padding: '16px', borderRadius: '8px', fontFamily: 'monospace', fontSize: '12px', color: 'var(--text-dim)' }}>
-                                <div style={{ marginBottom: '8px', color: 'var(--text)', fontWeight: 600 }}>{msg.data.agent_name} Execution</div>
-                                {msg.data.execution_steps.map((step: string, i: number) => (
-                                  <div key={i}>✓ {step}</div>
-                                ))}
-                                <div style={{ marginTop: '8px', color: 'var(--verified)' }}>Analysis complete</div>
-                              </div>
-                            )}
-
                             {/* Summary */}
                             <div style={{ marginBottom: '24px' }}>
                               <h3 className="text-xs font-semibold" style={{ textTransform: 'uppercase', marginBottom: '8px', color: 'var(--text-faint)' }}>Executive Summary</h3>
