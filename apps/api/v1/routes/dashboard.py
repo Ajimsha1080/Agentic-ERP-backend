@@ -95,7 +95,7 @@ async def get_knowledge_data():
             {"label": "Total Documents", "value": "0", "delta": "Awaiting Indexing", "trend": "flat"},
             {"label": "Index Status", "value": "100%", "delta": "Optimal", "trend": "active"},
             {"label": "Agent Queries (30d)", "value": "0", "delta": "Ready", "trend": "flat"},
-            {"label": "Avg Retrieval Time", "value": "4ms", "delta": "Sub-10ms Vector Search", "trend": "active"},
+            {"label": "Avg Retrieval Time", "value": "0ms", "delta": "Ready for Vector Search", "trend": "flat"},
             {"label": "Unindexed Files", "value": "0", "delta": "Queue Clear", "trend": "flat"}
         ],
         "documents": []
