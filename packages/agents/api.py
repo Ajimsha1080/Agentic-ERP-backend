@@ -24,14 +24,14 @@ class AgentResponse(BaseModel):
         from_attributes = True
 
 DEFAULT_AGENTS = [
-    {"name": "Finance Agent", "role": "Finance", "status": "Active", "success_rate": "99.2%", "actions": 142},
-    {"name": "Inventory Agent", "role": "Inventory", "status": "Active", "success_rate": "98.5%", "actions": 320},
-    {"name": "Procurement Agent", "role": "Procurement", "status": "Active", "success_rate": "100%", "actions": 45},
-    {"name": "Sales Agent", "role": "Sales", "status": "Active", "success_rate": "96.4%", "actions": 89},
-    {"name": "Operations Agent", "role": "Operations", "status": "Paused", "success_rate": "0%", "actions": 0},
-    {"name": "HR Agent", "role": "HR", "status": "Active", "success_rate": "100%", "actions": 12},
-    {"name": "Analytics Agent", "role": "Analytics", "status": "Active", "success_rate": "99.8%", "actions": 210},
-    {"name": "Compliance Agent", "role": "Compliance", "status": "Active", "success_rate": "100%", "actions": 64}
+    {"name": "Finance Agent", "role": "Finance", "status": "Active", "success_rate": "100%", "actions": 0},
+    {"name": "Inventory Agent", "role": "Inventory", "status": "Active", "success_rate": "100%", "actions": 0},
+    {"name": "Procurement Agent", "role": "Procurement", "status": "Active", "success_rate": "100%", "actions": 0},
+    {"name": "Sales Agent", "role": "Sales", "status": "Active", "success_rate": "100%", "actions": 0},
+    {"name": "Operations Agent", "role": "Operations", "status": "Active", "success_rate": "100%", "actions": 0},
+    {"name": "HR Agent", "role": "HR", "status": "Active", "success_rate": "100%", "actions": 0},
+    {"name": "Analytics Agent", "role": "Analytics", "status": "Active", "success_rate": "100%", "actions": 0},
+    {"name": "Compliance Agent", "role": "Compliance", "status": "Active", "success_rate": "100%", "actions": 0}
 ]
 
 @router.post("/", response_model=AgentResponse)
