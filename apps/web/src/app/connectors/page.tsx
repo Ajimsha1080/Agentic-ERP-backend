@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 // Professional High-Resolution Vector SVG Brand Logos
 const BRAND_LOGOS: Record<string, React.ReactNode> = {
@@ -14,27 +14,9 @@ const BRAND_LOGOS: Record<string, React.ReactNode> = {
       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
     </svg>
   ),
-  "Slack": (
-    <svg viewBox="0 0 24 24" width="26" height="26">
-      <path fill="#E01E5A" d="M6 15a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5zm0-7.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
-      <path fill="#36C5F0" d="M9 6a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0zm7.5 0a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0z"/>
-      <path fill="#2EB67D" d="M18 9a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zm0 7.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5z"/>
-      <path fill="#ECB22E" d="M15 18a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0zm-7.5 0a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
-    </svg>
-  ),
-  "QuickBooks": (
+  "QuickBooks Online": (
     <svg viewBox="0 0 24 24" width="26" height="26" fill="#2CA01C">
       <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h3c1.66 0 3 1.34 3 3s-1.34 3-3 3h-1v2zm0-4h1c.55 0 1-.45 1-1s-.45-1-1-1h-1v2z"/>
-    </svg>
-  ),
-  "Zendesk": (
-    <svg viewBox="0 0 24 24" width="26" height="26" fill="#03363D">
-      <path d="M12 3L2 12h20L12 3zm0 18l10-9H2l10 9z"/>
-    </svg>
-  ),
-  "Notion": (
-    <svg viewBox="0 0 24 24" width="26" height="26" fill="#000000">
-      <path d="M4.459 4.208c.746.606 1.026.56 2.428.466l11.433-.672c.28 0 .047-.28-.047-.327L15.93 2.016c-.42-.326-.98-.466-1.54-.42L3.992 2.622c-.42.047-.56.28-.326.56l.793 1.026zm1.728 3.545v13.535c0 .653.373.886.98.84l12.648-.747c.606-.046.746-.466.746-.98V6.867c0-.514-.233-.793-.746-.747L7.167 6.867c-.514.046-.98.373-.98.886zm10.78 1.493c.094.466 0 .933-.42.98l-1.026.14v7.794c0 .84.373 1.073 1.026 1.026l.466-.046v.466l-3.36.233v-.466l.513-.093c.42-.047.56-.327.56-.84v-4.153l-3.407 5.086-1.447.093v-8.027l-1.073-.186v-.466l2.8.186v7.327l3.22-4.993c.186-.28.466-.466.793-.466h1.353v.373z"/>
     </svg>
   ),
   "SAP S/4HANA": (
@@ -42,7 +24,7 @@ const BRAND_LOGOS: Record<string, React.ReactNode> = {
       <path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.8L19.2 8 12 11.2 4.8 8 12 4.8zM4 9.6l7 3.1v6.9L4 16.5V9.6zm16 6.9l-7 3.1v-6.9l7-3.1v6.9z"/>
     </svg>
   ),
-  "Shopify Store": (
+  "Shopify": (
     <svg viewBox="0 0 24 24" width="26" height="26" fill="#95BF47">
       <path d="M15.34 2.66c-.11-.05-.24-.04-.33.02L12.5 4.5 10 2.68c-.09-.06-.22-.07-.33-.02L4 5.25v13.5l6 3.25 6-3.25V5.25l-0.66-2.59zM12 19.5L6 16.25V7.5l6 3.25v8.75zm1-8.75l5-2.71v8.75l-5 2.71V10.75z"/>
     </svg>
@@ -50,6 +32,11 @@ const BRAND_LOGOS: Record<string, React.ReactNode> = {
   "Oracle NetSuite": (
     <svg viewBox="0 0 24 24" width="26" height="26" fill="#005A9C">
       <path d="M12 2L2 7v10l10 5 10-5V7L12 2zm0 2.8L19.2 8 12 11.2 4.8 8 12 4.8z"/>
+    </svg>
+  ),
+  "Custom REST API": (
+    <svg viewBox="0 0 24 24" width="26" height="26" fill="#6366F1">
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
     </svg>
   ),
   "Default": (
@@ -63,8 +50,35 @@ export default function ConnectorsPage() {
   const [activeTab, setActiveTab] = useState<"all" | "connected" | "disconnected">("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Clean Initial State (Connectors dynamically added by user)
   const [connectors, setConnectors] = useState<any[]>([]);
+
+  // Fetch available connectors from backend API
+  useEffect(() => {
+    fetch("http://localhost:8000/api/v1/connectors/available")
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          const mapped = data.map((item: any) => ({
+            name: item.name,
+            category: item.type === 'erp' ? 'Enterprise ERP Stream' : item.type === 'crm' ? 'CRM Data Stream' : item.type === 'ecommerce' ? 'E-Commerce Store' : 'REST Data Stream',
+            status: 'disconnected',
+            syncTime: 'Ready to bind',
+            assignedAgent: getSuggestedAgent(item.name),
+            protocol: 'REST / OAuth 2.0',
+            latency: '—'
+          }));
+          setConnectors(mapped);
+        }
+      })
+      .catch(() => {
+        setConnectors([
+          { name: "SAP S/4HANA", category: "Enterprise ERP Stream", status: "disconnected", syncTime: "Ready to bind", assignedAgent: "Inventory & Procurement Agent", protocol: "REST / OAuth 2.0", latency: "—" },
+          { name: "Salesforce", category: "CRM Data Stream", status: "disconnected", syncTime: "Ready to bind", assignedAgent: "Sales Agent", protocol: "REST / OAuth 2.0", latency: "—" },
+          { name: "Shopify", category: "E-Commerce Store", status: "disconnected", syncTime: "Ready to bind", assignedAgent: "Inventory Agent", protocol: "REST / Webhook", latency: "—" },
+          { name: "Custom REST API", category: "Generic Data Stream", status: "disconnected", syncTime: "Ready to bind", assignedAgent: "Agent Orchestrator (All Agents)", protocol: "REST API", latency: "—" }
+        ]);
+      });
+  }, []);
 
   // Modal states
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -79,9 +93,10 @@ export default function ConnectorsPage() {
 
   const getSuggestedAgent = (prov: string) => {
     if (prov.includes("Salesforce")) return "Sales Agent";
-    if (prov.includes("QuickBooks")) return "Finance Agent";
+    if (prov.includes("QuickBooks") || prov.includes("Zoho")) return "Finance Agent";
     if (prov.includes("SAP")) return "Inventory & Procurement Agent";
     if (prov.includes("NetSuite")) return "Finance & Inventory Agent";
+    if (prov.includes("Shopify")) return "Inventory Agent";
     return "Agent Orchestrator (All Agents)";
   };
 
@@ -92,18 +107,15 @@ export default function ConnectorsPage() {
 
   const handleConnect = (e: React.FormEvent) => {
     e.preventDefault();
-    setConnectors([
-      { name: selectedProvider, category: 'Enterprise ERP Stream', status: 'connected', syncTime: 'Just now', assignedAgent: targetAgent, protocol: 'REST / OAuth 2.0', latency: '12ms' },
-      ...connectors.filter(c => c.name !== selectedProvider)
-    ]);
+    setConnectors(prev => prev.map(c => c.name === selectedProvider ? { ...c, status: 'connected', assignedAgent: targetAgent, syncTime: 'Just now', latency: '12ms' } : c));
     setIsModalOpen(false);
     setStep(1);
     setApiKey("");
   };
 
   const handleRemoveConnector = (name: string) => {
-    if (confirm(`Are you sure you want to disconnect and remove the ${name} integration?`)) {
-      setConnectors(prev => prev.filter(c => c.name !== name));
+    if (confirm(`Are you sure you want to disconnect ${name}?`)) {
+      setConnectors(prev => prev.map(c => c.name === name ? { ...c, status: 'disconnected', syncTime: 'Disconnected', latency: '—' } : c));
     }
   };
 
@@ -206,102 +218,102 @@ export default function ConnectorsPage() {
           </div>
         </div>
 
-        {/* Connectors Grid / Empty State */}
-        {filteredConnectors.length === 0 ? (
-          <div className="panel" style={{ padding: '60px 24px', textAlign: 'center', color: 'var(--text-dim)', borderRadius: '16px' }}>
-            <div style={{ fontSize: '42px', marginBottom: '16px' }}>🔌</div>
-            <h3 className="font-semibold text-base mb-1" style={{ color: 'var(--text)' }}>No ERP Data Streams Connected</h3>
-            <p className="text-sm text-dim mb-4" style={{ maxWidth: '460px', margin: '0 auto 16px auto' }}>
-              Connect your company&apos;s real SAP S/4HANA, Oracle NetSuite, QuickBooks, or Custom REST API stream to bind your agent workspace.
-            </p>
-            <button 
-              className="btn btn-primary" 
-              style={{ background: 'var(--ai-core)' }}
-              onClick={() => setIsModalOpen(true)}
+        {/* Connectors Grid */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '24px' }}>
+          {filteredConnectors.map(c => (
+            <div 
+              key={c.name} 
+              className="panel" 
+              style={{ 
+                padding: '24px', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '16px', 
+                borderRadius: '16px',
+                borderLeft: `4px solid ${c.status === 'connected' ? 'var(--verified)' : 'var(--border)'}`,
+                boxShadow: c.status === 'connected' ? '0 4px 16px rgba(0,0,0,0.04)' : undefined
+              }}
             >
-              + Connect New ERP / Data Source
-            </button>
-          </div>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '24px' }}>
-            {filteredConnectors.map(c => (
-              <div 
-                key={c.name} 
-                className="panel" 
-                style={{ 
-                  padding: '24px', 
-                  display: 'flex', 
-                  flexDirection: 'column', 
-                  gap: '16px', 
-                  borderRadius: '16px',
-                  borderLeft: `4px solid ${c.status === 'connected' ? 'var(--verified)' : 'var(--border)'}`,
-                  boxShadow: c.status === 'connected' ? '0 4px 16px rgba(0,0,0,0.04)' : undefined
-                }}
-              >
-                
-                {/* Header Row */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-                    <div style={{ background: 'var(--surface-2)', width: '52px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '14px', border: '1px solid var(--border)' }}>
-                      {BRAND_LOGOS[c.name] || BRAND_LOGOS["Default"]}
-                    </div>
-                    <div>
-                      <h3 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: 'var(--text)' }}>{c.name}</h3>
-                      <div style={{ fontSize: '12px', color: 'var(--text-faint)', marginTop: '2px' }}>{c.category}</div>
-                    </div>
+              
+              {/* Header Row */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                  <div style={{ background: 'var(--surface-2)', width: '52px', height: '52px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '14px', border: '1px solid var(--border)' }}>
+                    {BRAND_LOGOS[c.name] || BRAND_LOGOS["Default"]}
                   </div>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 600, color: c.status === 'connected' ? 'var(--verified)' : 'var(--text-dim)', background: c.status === 'connected' ? 'var(--verified-soft)' : 'var(--surface-2)', padding: '4px 10px', borderRadius: '20px' }}>
-                    <span className="agent-dot" style={{ background: c.status === 'connected' ? 'var(--verified)' : 'var(--text-dim)' }}></span>
-                    {c.status === 'connected' ? 'Connected' : 'Disconnected'}
+                  <div>
+                    <h3 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: 'var(--text)' }}>{c.name}</h3>
+                    <div style={{ fontSize: '12px', color: 'var(--text-faint)', marginTop: '2px' }}>{c.category}</div>
                   </div>
                 </div>
 
-                {/* Data Specs Box */}
-                <div style={{ background: 'var(--bg)', borderRadius: '10px', padding: '12px 14px', border: '1px solid var(--border-soft)', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ color: 'var(--text-faint)' }}>Routing Agent</span>
-                    <strong style={{ color: 'var(--ai-core)' }}>{c.assignedAgent}</strong>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ color: 'var(--text-faint)' }}>Protocol</span>
-                    <span style={{ color: 'var(--text)' }}>{c.protocol}</span>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span style={{ color: 'var(--text-faint)' }}>API Latency</span>
-                    <span style={{ color: c.latency === '—' ? 'var(--text-faint)' : 'var(--verified)', fontWeight: 600 }}>{c.latency}</span>
-                  </div>
-                </div>
-                
-                {/* Footer Actions Row */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border-soft)' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--text-faint)' }}>Sync: {c.syncTime}</span>
-                  
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button 
-                      className="btn btn-secondary text-xs" 
-                      style={{ padding: '6px 12px' }}
-                      onClick={() => {
-                        setEditingConnector(c);
-                        setEditAgent(c.assignedAgent);
-                        setEditStatus(c.status);
-                      }}
-                    >
-                      ✎ Edit
-                    </button>
-                    <button 
-                      className="btn btn-secondary text-xs" 
-                      style={{ padding: '6px 12px', color: 'var(--danger)', borderColor: 'var(--border)' }}
-                      onClick={() => handleRemoveConnector(c.name)}
-                    >
-                      🗑️ Disconnect
-                    </button>
-                  </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', fontWeight: 600, color: c.status === 'connected' ? 'var(--verified)' : 'var(--text-dim)', background: c.status === 'connected' ? 'var(--verified-soft)' : 'var(--surface-2)', padding: '4px 10px', borderRadius: '20px' }}>
+                  <span className="agent-dot" style={{ background: c.status === 'connected' ? 'var(--verified)' : 'var(--text-dim)' }}></span>
+                  {c.status === 'connected' ? 'Connected' : 'Available'}
                 </div>
               </div>
-            ))}
-          </div>
-        )}
+
+              {/* Data Specs Box */}
+              <div style={{ background: 'var(--bg)', borderRadius: '10px', padding: '12px 14px', border: '1px solid var(--border-soft)', display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '12px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--text-faint)' }}>Routing Agent</span>
+                  <strong style={{ color: 'var(--ai-core)' }}>{c.assignedAgent}</strong>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--text-faint)' }}>Protocol</span>
+                  <span style={{ color: 'var(--text)' }}>{c.protocol}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ color: 'var(--text-faint)' }}>API Latency</span>
+                  <span style={{ color: c.latency === '—' ? 'var(--text-faint)' : 'var(--verified)', fontWeight: 600 }}>{c.latency}</span>
+                </div>
+              </div>
+              
+              {/* Footer Actions Row */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '16px', borderTop: '1px solid var(--border-soft)' }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-faint)' }}>Sync: {c.syncTime}</span>
+                
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  {c.status === 'connected' ? (
+                    <>
+                      <button 
+                        className="btn btn-secondary text-xs" 
+                        style={{ padding: '6px 12px' }}
+                        onClick={() => {
+                          setEditingConnector(c);
+                          setEditAgent(c.assignedAgent);
+                          setEditStatus(c.status);
+                        }}
+                      >
+                        ✎ Edit
+                      </button>
+                      <button 
+                        className="btn btn-secondary text-xs" 
+                        style={{ padding: '6px 12px', color: 'var(--danger)', borderColor: 'var(--border)' }}
+                        onClick={() => handleRemoveConnector(c.name)}
+                      >
+                        🗑️ Disconnect
+                      </button>
+                    </>
+                  ) : (
+                    <button 
+                      className="btn btn-primary text-xs" 
+                      style={{ padding: '6px 14px', background: 'var(--ai-core)' }}
+                      onClick={() => {
+                        setSelectedProvider(c.name);
+                        setTargetAgent(c.assignedAgent);
+                        setIsModalOpen(true);
+                        setStep(2);
+                      }}
+                    >
+                      + Connect Stream
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Edit Connector Modal */}
@@ -375,7 +387,7 @@ export default function ConnectorsPage() {
               <div>
                 <label className="text-xs font-semibold uppercase text-faint mb-2 block">Select Enterprise System</label>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-                  {["SAP S/4HANA", "Oracle NetSuite", "QuickBooks Online", "Salesforce CRM", "Custom REST API"].map(provider => (
+                  {["SAP S/4HANA", "Oracle NetSuite", "QuickBooks Online", "Salesforce", "Shopify", "Custom REST API"].map(provider => (
                     <div 
                       key={provider}
                       onClick={() => handleSelectProvider(provider)}
