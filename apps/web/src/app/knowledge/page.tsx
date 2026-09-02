@@ -1,16 +1,19 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function KnowledgePage() {
   const [data, setData] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Upload Form State
+  // File Upload State
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [docName, setDocName] = useState("");
   const [docType, setDocType] = useState("PDF Document");
   const [docOwner, setDocOwner] = useState("Admin");
   const [docAccess, setDocAccess] = useState("Global (All Agents)");
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch("http://localhost:8000/api/v1/dashboard/knowledge")
@@ -19,12 +22,26 @@ export default function KnowledgePage() {
       .catch(console.error);
   }, []);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      setDocName(file.name);
+
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      if (ext === 'pdf') setDocType('PDF Document');
+      else if (ext === 'docx' || ext === 'doc') setDocType('Word Document');
+      else if (ext === 'csv' || ext === 'xlsx') setDocType('Spreadsheet Ledger');
+      else setDocType('Plain Text SOP');
+    }
+  };
+
   const handleUploadSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!docName.trim()) return;
+    const finalName = docName.trim() || selectedFile?.name || "Uploaded_Knowledge_Doc.pdf";
 
     const newDoc = {
-      name: docName,
+      name: finalName,
       type: docType,
       owner: docOwner,
       updated: "Just now",
@@ -47,6 +64,7 @@ export default function KnowledgePage() {
     });
 
     setIsModalOpen(false);
+    setSelectedFile(null);
     setDocName("");
   };
 
@@ -108,7 +126,7 @@ export default function KnowledgePage() {
                   {(data?.documents || []).length === 0 ? (
                     <tr>
                       <td colSpan={5} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-dim)' }}>
-                        📄 No RAG documents uploaded yet. Click <strong>+ Upload Document</strong> above to index SOPs, policies, or financial ledgers!
+                        📄 No RAG documents uploaded yet. Click <strong>+ Upload Document</strong> above to choose a file from your computer!
                       </td>
                     </tr>
                   ) : (
@@ -137,21 +155,52 @@ export default function KnowledgePage() {
       {/* Upload Document Modal */}
       {isModalOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '32px', width: '100%', maxWidth: '480px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+          <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: '16px', padding: '32px', width: '100%', maxWidth: '500px', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h2 className="font-semibold text-lg">Upload RAG Knowledge Document</h2>
               <button onClick={() => setIsModalOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: '20px', cursor: 'pointer' }}>✕</button>
             </div>
 
             <form onSubmit={handleUploadSubmit}>
+              
+              {/* File Input Dropzone Box */}
+              <div 
+                onClick={() => fileInputRef.current?.click()}
+                style={{ 
+                  border: '2px dashed var(--ai-core)', 
+                  borderRadius: '12px', 
+                  padding: '24px', 
+                  textAlign: 'center', 
+                  background: 'var(--surface-2)', 
+                  cursor: 'pointer',
+                  marginBottom: '20px',
+                  transition: 'all 0.2s ease'
+                }}
+              >
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileChange}
+                  accept=".pdf,.docx,.doc,.csv,.xlsx,.txt,.md"
+                  style={{ display: 'none' }}
+                />
+                <div style={{ fontSize: '32px', marginBottom: '8px' }}>📁</div>
+                <div style={{ fontWeight: 600, fontSize: '14px', color: 'var(--text)', marginBottom: '4px' }}>
+                  {selectedFile ? selectedFile.name : "Click to select a file from your computer"}
+                </div>
+                <div style={{ fontSize: '12px', color: 'var(--text-dim)' }}>
+                  {selectedFile ? `${(selectedFile.size / 1024).toFixed(1)} KB • Ready to Index` : "Supports PDF, DOCX, CSV, XLSX, TXT, MD (Max 50MB)"}
+                </div>
+              </div>
+
               <div style={{ marginBottom: '16px' }}>
-                <label className="text-xs font-semibold uppercase text-faint mb-1 block">Document Title / File Name</label>
+                <label className="text-xs font-semibold uppercase text-faint mb-1 block">Document Title / Display Name</label>
                 <input 
                   type="text" 
                   required
                   className="ai-cmd-input" 
                   style={{ width: '100%', padding: '10px 14px', fontSize: '13px', borderRadius: '8px' }}
-                  placeholder="e.g. Q4_Financial_Policy_SOP.pdf"
+                  placeholder="e.g. Financial_Policy_2026.pdf"
                   value={docName}
                   onChange={(e) => setDocName(e.target.value)}
                 />
